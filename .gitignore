@@ -6,7 +6,7 @@ yarn-error.log*
 .pnpm-debug.log*
 
 # Environment Variables
-.env
+# .env removed to allow committing as requested
 .env.local
 .env.development.local
 .env.test.local
@@ -52,7 +52,7 @@ dist/
 .yarn-integrity
 
 # dotenv environment variables file
-.env
+# .env removed to allow committing as requested
 .env.test
 
 # parcel-bundler cache

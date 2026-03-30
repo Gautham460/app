@@ -1,6 +1,6 @@
 import io from 'socket.io-client';
 
-const socket = io('http://127.0.0.1:5000', { withCredentials: true });
+const socket = io('https://emotional-energy-os.onrender.com', { withCredentials: true });
 
 export default function Community({ user, fitbitData }) {
   const navigate = useNavigate();
@@ -12,7 +12,7 @@ export default function Community({ user, fitbitData }) {
 
   const fetchPulse = async () => {
     try {
-      const response = await axios.get('http://127.0.0.1:5000/api/analytics/community-vibe');
+      const response = await axios.get('https://emotional-energy-os.onrender.com/api/analytics/community-vibe');
       const data = response.data;
       setPulse({
         energyPulse: parseFloat(data.averageEnergy) || 7.0,

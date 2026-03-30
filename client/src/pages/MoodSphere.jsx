@@ -4,7 +4,7 @@ import { Activity, ArrowLeft, Zap, Heart, Sparkles } from 'lucide-react';
 import axios from 'axios';
 import io from 'socket.io-client';
 
-const socket = io('http://127.0.0.1:5000', { withCredentials: true });
+const socket = io('https://emotional-energy-os.onrender.com', { withCredentials: true });
 
 export default function MoodSphere({ user, fitbitData }) {
   const navigate = useNavigate();
@@ -18,7 +18,7 @@ export default function MoodSphere({ user, fitbitData }) {
   useEffect(() => {
     const fetchLogs = async () => {
       try {
-        const response = await axios.get(`http://127.0.0.1:5000/api/energy/${user.id || user._id}`);
+        const response = await axios.get(`https://emotional-energy-os.onrender.com/api/energy/${user.id || user._id}`);
         const logs = response.data;
         
         const counts = { Happy: 0, Calm: 0, Stressed: 0, Neutral: 0 };

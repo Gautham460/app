@@ -20,7 +20,7 @@ export default function HabitLink({ user }) {
   useEffect(() => {
     const fetchHabits = async () => {
       try {
-        const response = await axios.get(`http://127.0.0.1:5000/api/habit/${user.id || user._id}`);
+        const response = await axios.get(`https://emotional-energy-os.onrender.com/api/habit/${user.id || user._id}`);
         setHabits(response.data);
       } catch (err) {
         console.error('Failed to fetch habits:', err);
@@ -35,7 +35,7 @@ export default function HabitLink({ user }) {
     e.preventDefault();
     if (!newHabitName.trim()) return;
     try {
-      const response = await axios.post('http://127.0.0.1:5000/api/habit/add', {
+      const response = await axios.post('https://emotional-energy-os.onrender.com/api/habit/add', {
         userId: user.id || user._id,
         name: newHabitName
       });
@@ -49,7 +49,7 @@ export default function HabitLink({ user }) {
 
   const handleLogHabit = async (habitId) => {
     try {
-      const response = await axios.post('http://127.0.0.1:5000/api/habit/log', {
+      const response = await axios.post('https://emotional-energy-os.onrender.com/api/habit/log', {
         habitId,
         value: 1 // Default increment for now
       });

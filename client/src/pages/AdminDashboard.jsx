@@ -32,7 +32,7 @@ export default function AdminDashboard({ user }) {
   useEffect(() => {
     const fetchOrgStats = async () => {
       try {
-        const res = await axios.get('http://127.0.0.1:5000/api/analytics/admin/org-trends');
+        const res = await axios.get('https://emotional-energy-os.onrender.com/api/analytics/admin/org-trends');
         setStats(res.data.data);
       } catch (err) {
         console.error('Admin Fetch Error:', err);

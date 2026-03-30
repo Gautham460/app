@@ -16,8 +16,8 @@ export default function SocialReport({ user, fitbitData }) {
       try {
         const userId = user.id || user._id;
         const [logsRes, reportRes] = await Promise.all([
-          axios.get(`http://127.0.0.1:5000/api/energy/${userId}`),
-          axios.get(`http://127.0.0.1:5000/api/ai/report/${userId}`)
+          axios.get(`https://emotional-energy-os.onrender.com/api/energy/${userId}`),
+          axios.get(`https://emotional-energy-os.onrender.com/api/ai/report/${userId}`)
         ]);
         
         setLogs(logsRes.data);

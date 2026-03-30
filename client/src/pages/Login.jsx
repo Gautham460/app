@@ -21,7 +21,7 @@ export default function Login({ setUser, initialIsSignUp = false }) {
       const endpoint = isSignUp ? '/api/auth/register' : '/api/auth/login';
       const payload = isSignUp ? { username, email, password } : { username, password };
       
-      const response = await axios.post(`http://127.0.0.1:5000${endpoint}`, payload);
+      const response = await axios.post(`https://emotional-energy-os.onrender.com${endpoint}`, payload);
       
       if (isSignUp) {
         setIsSignUp(false);

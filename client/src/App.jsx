@@ -26,7 +26,7 @@ function App() {
     // Attempt silent login via backend HttpOnly cookie validation
     const fetchSession = async () => {
       try {
-        const res = await axios.get('http://127.0.0.1:5000/api/auth/me');
+        const res = await axios.get('https://emotional-energy-os.onrender.com/api/auth/me');
         setUser(res.data.user);
       } catch (err) {
         setUser(null);
@@ -42,7 +42,7 @@ function App() {
 
     const syncFitbit = async () => {
       try {
-        const response = await axios.get(`http://127.0.0.1:5000/api/fitbit/heart-rate/${user.id || user._id}`);
+        const response = await axios.get(`https://emotional-energy-os.onrender.com/api/fitbit/heart-rate/${user.id || user._id}`);
         if (response.data.status === 'success') {
           setFitbitData({
             logs: response.data.data,

@@ -37,7 +37,7 @@ export default function GeminiCoach({ user }) {
     setIsLoading(true);
 
     try {
-      const response = await axios.post('http://127.0.0.1:5000/api/ai/chat', {
+      const response = await axios.post('https://emotional-energy-os.onrender.com/api/ai/chat', {
         userId: user.id || user._id,
         message: input,
         history: messages

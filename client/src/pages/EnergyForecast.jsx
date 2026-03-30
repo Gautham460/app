@@ -35,7 +35,7 @@ export default function EnergyForecast({ user }) {
   useEffect(() => {
     const fetchForecast = async () => {
       try {
-        const response = await axios.get(`http://127.0.0.1:5000/api/analytics/forecast/${user.id || user._id}`);
+        const response = await axios.get(`https://emotional-energy-os.onrender.com/api/analytics/forecast/${user.id || user._id}`);
         setForecast(response.data);
       } catch (err) {
         console.error('Failed to fetch energy forecast:', err);

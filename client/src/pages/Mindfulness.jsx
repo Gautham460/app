@@ -25,7 +25,7 @@ export default function Mindfulness({ user, fitbitData }) {
       // PERSIST: Log session completion to MongoDB
       const logSession = async () => {
         try {
-          await axios.post('http://127.0.0.1:5000/api/mindfulness/log', {
+          await axios.post('https://emotional-energy-os.onrender.com/api/mindfulness/log', {
             userId: user.id || user._id,
             duration: 60, // Fixed for this guided session
             moodBefore: 'Unknown',

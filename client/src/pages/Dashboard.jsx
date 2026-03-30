@@ -45,7 +45,7 @@ export default function Dashboard({ user, setUser, fitbitData }) {
   useEffect(() => {
     const checkBurnout = async () => {
       try {
-        const response = await axios.get(`http://127.0.0.1:5000/api/energy/${user.id || user._id}`);
+        const response = await axios.get(`https://emotional-energy-os.onrender.com/api/energy/${user.id || user._id}`);
         const logs = response.data;
         if (Array.isArray(logs) && logs.length > 5) {
           const risk = calculateBurnoutRisk(logs, fitbitData.logs);
@@ -66,7 +66,7 @@ export default function Dashboard({ user, setUser, fitbitData }) {
   }, [user, fitbitData.logs]);
 
   const handleLogout = async () => {
-    await axios.post('http://127.0.0.1:5000/api/auth/logout');
+    await axios.post('https://emotional-energy-os.onrender.com/api/auth/logout');
     setUser(null);
     navigate('/login');
   };
@@ -75,7 +75,7 @@ export default function Dashboard({ user, setUser, fitbitData }) {
     setIsSubmitting(true);
     try {
       const encryptedNotes = isPrivacyActive ? await encryptData(notes, user.id || user._id) : notes;
-      await axios.post('http://127.0.0.1:5000/api/energy/log', {
+      await axios.post('https://emotional-energy-os.onrender.com/api/energy/log', {
         userId: user.id || user._id,
         energyLevel: parseInt(energyLevel),
         emotion,
@@ -233,7 +233,7 @@ export default function Dashboard({ user, setUser, fitbitData }) {
             <button 
               className="btn" 
               style={{ marginTop: 'auto', backgroundColor: 'var(--secondary)', color: 'white' }} 
-              onClick={() => window.location.href = `http://127.0.0.1:5000/api/fitbit/auth?userId=${user.id || user._id}`}
+              onClick={() => window.location.href = `https://emotional-energy-os.onrender.com/api/fitbit/auth?userId=${user.id || user._id}`}
             >
               Connect Fitbit API
             </button>

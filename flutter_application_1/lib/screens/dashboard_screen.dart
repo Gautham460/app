@@ -203,6 +203,12 @@ class _MainDashboardState extends State<_MainDashboard> {
                       final url = Uri.parse('https://emotional-energy-os.onrender.com/api/fitbit/auth?userId=${auth.user!.id}');
                       if (await canLaunchUrl(url)) {
                         await launchUrl(url, mode: LaunchMode.externalApplication);
+                      } else {
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('Could not launch Fitbit login: $url')),
+                          );
+                        }
                       }
                     },
                     child: const Text('Connect Fitbit'),

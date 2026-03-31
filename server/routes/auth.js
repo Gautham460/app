@@ -53,7 +53,7 @@ router.post('/register', async (req, res) => {
       maxAge: 24 * 60 * 60 * 1000 // 1 day
     });
 
-    res.status(201).json({ user: { id: user._id, username: user.username, email: user.email, role: user.role, organization: user.organization } });
+    res.status(201).json({ token, user: { id: user._id, username: user.username, email: user.email, role: user.role, organization: user.organization } });
   } catch (err) {
     console.error('Registration Error:', err);
     res.status(500).json({ error: 'Server error during registration' });
@@ -92,7 +92,7 @@ router.post('/login', async (req, res) => {
       maxAge: 24 * 60 * 60 * 1000 // 1 day
     });
 
-    res.json({ user: { id: user._id, username: user.username, email: user.email, role: user.role, organization: user.organization } });
+    res.json({ token, user: { id: user._id, username: user.username, email: user.email, role: user.role, organization: user.organization } });
   } catch (err) {
     res.status(500).json({ error: 'Server error during login' });
   }
@@ -108,7 +108,7 @@ router.get('/me', async (req, res) => {
     const user = await User.findById(verified.id).select('-password');
     if (!user) return res.status(401).json({ error: 'User not found' });
 
-    res.json({ user: { id: user._id, username: user.username, email: user.email, role: user.role, organization: user.organization } });
+    res.json({ token, user: { id: user._id, username: user.username, email: user.email, role: user.role, organization: user.organization } });
   } catch (err) {
     res.status(401).json({ error: 'Invalid token' });
   }

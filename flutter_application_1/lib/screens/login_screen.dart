@@ -42,7 +42,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
     if (!success) {
       setState(() {
-        _errorMessage = isLoginMode ? 'Invalid username or password' : 'Registration failed. User may already exist.';
+        _errorMessage = auth.apiError ?? (isLoginMode ? 'Invalid username or password' : 'Registration failed.');
       });
     }
   }

@@ -8,13 +8,16 @@ class AuthProvider with ChangeNotifier {
   UserModel? _user;
   String? _token;
   bool _isLoading = false;
+  String? _apiError;
 
   UserModel? get user => _user;
   bool get isAuthenticated => _user != null;
   bool get isLoading => _isLoading;
+  String? get apiError => _apiError;
 
   Future<bool> login(String username, String password) async {
     _isLoading = true;
+    _apiError = null;
     notifyListeners();
 
     try {
@@ -26,22 +29,22 @@ class AuthProvider with ChangeNotifier {
       print('Login Response Status: ${response.statusCode}');
       print('Login Response Body: ${response.body}');
 
-      if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
-        _token = data['token'];
-        _user = UserModel.fromJson(data['user']);
-        
-        // Store token for persistence
-        final prefs = await SharedPreferences.getInstance();
-        await prefs.setString('jwt_token', _token!);
-        
-        _isLoading = false;
-        notifyListeners();
-        return true;
-      } else {
-        print('Login Failed with status ${response.statusCode}');
-      }
+      final data = jsonDecode(response.body);
+      _token = data['token'];
+      _user = UserModel.fromJson(data['user']);
+      
+      // Store token for persistence
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('jwt_token', _token!);
+      
+      _isLoading = false;
+      notifyListeners();
+      return true;
+    } on ApiException catch (e) {
+      _apiError = e.message;
+      print('Login ApiException: ${e.toString()}');
     } catch (e) {
+      _apiError = 'An unexpected error occurred';
       print('Login error: $e');
     }
 
@@ -52,6 +55,7 @@ class AuthProvider with ChangeNotifier {
 
   Future<bool> register(String username, String email, String password) async {
     _isLoading = true;
+    _apiError = null;
     notifyListeners();
 
     try {
@@ -64,15 +68,14 @@ class AuthProvider with ChangeNotifier {
       print('Register Response Status: ${response.statusCode}');
       print('Register Response Body: ${response.body}');
 
-      if (response.statusCode == 201) {
-        // Automatically login after successful registration or just return true.
-        _isLoading = false;
-        notifyListeners();
-        return true;
-      } else {
-        print('Registration Failed with status ${response.statusCode}');
-      }
+      _isLoading = false;
+      notifyListeners();
+      return true;
+    } on ApiException catch (e) {
+      _apiError = e.message;
+      print('Register ApiException: ${e.toString()}');
     } catch (e) {
+      _apiError = 'An unexpected error occurred';
       print('Registration error: $e');
     }
 

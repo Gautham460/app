@@ -13,13 +13,13 @@ class AuthProvider with ChangeNotifier {
   bool get isAuthenticated => _user != null;
   bool get isLoading => _isLoading;
 
-  Future<bool> login(String email, String password) async {
+  Future<bool> login(String username, String password) async {
     _isLoading = true;
     notifyListeners();
 
     try {
       final response = await ApiService.post('/auth/login', {
-        'email': email,
+        'username': username,
         'password': password,
       });
 
@@ -38,6 +38,36 @@ class AuthProvider with ChangeNotifier {
       }
     } catch (e) {
       print('Login error: $e');
+    }
+
+    _isLoading = false;
+    notifyListeners();
+    return false;
+  }
+
+  Future<bool> register(String username, String email, String password) async {
+    _isLoading = true;
+    notifyListeners();
+
+    try {
+      final response = await ApiService.post('/auth/register', {
+        'username': username,
+        'email': email,
+        'password': password,
+      });
+
+      if (response.statusCode == 201) {
+        // Automatically login after successful registration or just return true.
+        _isLoading = false;
+        notifyListeners();
+        // Since backend doesn't return the token in body (it sets a cookie), 
+        // we should try to login directly to get the token or just return true.
+        // Wait, backend register DOES return a token cookie, but flutter ApiService might not handle cookies.
+        // Let's just return true and require the user to log in if needed.
+        return true;
+      }
+    } catch (e) {
+      print('Registration error: $e');
     }
 
     _isLoading = false;

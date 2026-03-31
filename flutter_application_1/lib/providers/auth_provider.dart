@@ -23,6 +23,9 @@ class AuthProvider with ChangeNotifier {
         'password': password,
       });
 
+      print('Login Response Status: ${response.statusCode}');
+      print('Login Response Body: ${response.body}');
+
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         _token = data['token'];
@@ -35,6 +38,8 @@ class AuthProvider with ChangeNotifier {
         _isLoading = false;
         notifyListeners();
         return true;
+      } else {
+        print('Login Failed with status ${response.statusCode}');
       }
     } catch (e) {
       print('Login error: $e');
@@ -56,15 +61,16 @@ class AuthProvider with ChangeNotifier {
         'password': password,
       });
 
+      print('Register Response Status: ${response.statusCode}');
+      print('Register Response Body: ${response.body}');
+
       if (response.statusCode == 201) {
         // Automatically login after successful registration or just return true.
         _isLoading = false;
         notifyListeners();
-        // Since backend doesn't return the token in body (it sets a cookie), 
-        // we should try to login directly to get the token or just return true.
-        // Wait, backend register DOES return a token cookie, but flutter ApiService might not handle cookies.
-        // Let's just return true and require the user to log in if needed.
         return true;
+      } else {
+        print('Registration Failed with status ${response.statusCode}');
       }
     } catch (e) {
       print('Registration error: $e');

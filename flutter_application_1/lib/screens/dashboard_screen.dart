@@ -156,7 +156,10 @@ class _MainDashboardState extends State<_MainDashboard> {
                           onTap: () => setState(() => _selectedEmoji = e.key),
                           child: Column(
                             children: [
-                              Text(e.value, style: TextStyle(fontSize: 32, opacity: _selectedEmoji == e.key ? 1.0 : 0.4)),
+                              Opacity(
+                                opacity: _selectedEmoji == e.key ? 1.0 : 0.4,
+                                child: Text(e.value, style: const TextStyle(fontSize: 32)),
+                              ),
                               const SizedBox(height: 4),
                               Text(e.key, style: TextStyle(fontSize: 10, color: _selectedEmoji == e.key ? Colors.white : Colors.white38)),
                             ],

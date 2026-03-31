@@ -97,8 +97,8 @@ router.get('/callback', async (req, res) => {
         }
         await fitbitData.save();
         
-        // Redirect back to your React frontend dashboard
-        res.redirect(`http://localhost:5173/dashboard?fitbit_connected=true`);
+        // Redirect back to your Flutter mobile app via Deep Link
+        res.redirect(`emotionalenergyos://fitbit-callback?fitbit_connected=true`);
 
     } catch (error) {
         console.error('Fitbit Auth Error:', error.response?.data || error.message);

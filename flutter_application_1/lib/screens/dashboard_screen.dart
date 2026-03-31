@@ -13,6 +13,7 @@ import 'social_report_screen.dart';
 import 'admin_dashboard_screen.dart';
 import '../providers/fitbit_provider.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../theme/app_theme.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -64,45 +65,56 @@ class _DashboardScreenState extends State<DashboardScreen> {
     final auth = Provider.of<AuthProvider>(context, listen: false);
 
     return Scaffold(
+      backgroundColor: AppTheme.background,
       appBar: AppBar(
-        title: Text(_titles[_selectedIndex]),
+        title: Text(_titles[_selectedIndex], style: AppTheme.darkTheme.textTheme.titleLarge),
+        backgroundColor: AppTheme.background.withOpacity(0.8),
+        elevation: 0,
+        centerTitle: true,
         actions: [
           if (_selectedIndex == 0) // Only show logout on dashboard
             IconButton(
-              icon: const Icon(Icons.logout),
+              icon: const Icon(Icons.logout, color: Colors.white70),
               onPressed: () => auth.logout(),
             )
         ],
       ),
       drawer: Drawer(
-        backgroundColor: const Color(0xFF1E293B),
+        backgroundColor: AppTheme.surface,
         child: ListView(
           padding: EdgeInsets.zero,
           children: [
             DrawerHeader(
               decoration: const BoxDecoration(
-                color: Colors.indigoAccent,
+                gradient: AppTheme.primaryGradient,
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  const Icon(Icons.energy_savings_leaf, color: Colors.white, size: 48),
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.2),
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(Icons.bolt, color: Colors.white, size: 32),
+                  ),
                   const SizedBox(height: 12),
-                  Text('Emotional Energy OS', style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
+                  const Text('Emotional Energy OS', style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
                   Text(auth.user?.name ?? 'User', style: const TextStyle(color: Colors.white70, fontSize: 14)),
                 ],
               ),
             ),
-            _buildDrawerItem(Icons.dashboard, 0),
-            _buildDrawerItem(Icons.chat_bubble, 1),
-            _buildDrawerItem(Icons.check_circle_outline, 2),
-            _buildDrawerItem(Icons.bubble_chart, 3),
-            _buildDrawerItem(Icons.show_chart, 4),
-            _buildDrawerItem(Icons.self_improvement, 5),
-            _buildDrawerItem(Icons.people_outline, 6),
-            _buildDrawerItem(Icons.share, 7),
-            _buildDrawerItem(Icons.admin_panel_settings, 8),
+            _buildDrawerItem(Icons.dashboard_rounded, 0),
+            _buildDrawerItem(Icons.chat_bubble_rounded, 1),
+            _buildDrawerItem(Icons.check_circle_rounded, 2),
+            _buildDrawerItem(Icons.bubble_chart_rounded, 3),
+            _buildDrawerItem(Icons.show_chart_rounded, 4),
+            _buildDrawerItem(Icons.self_improvement_rounded, 5),
+            _buildDrawerItem(Icons.people_alt_rounded, 6),
+            _buildDrawerItem(Icons.share_rounded, 7),
+            _buildDrawerItem(Icons.admin_panel_settings_rounded, 8),
           ],
         ),
       ),
@@ -111,9 +123,18 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 
   Widget _buildDrawerItem(IconData icon, int index) {
+    bool isSelected = _selectedIndex == index;
     return ListTile(
-      leading: Icon(icon, color: _selectedIndex == index ? Colors.indigoAccent : Colors.white70),
-      title: Text(_titles[index], style: TextStyle(color: _selectedIndex == index ? Colors.white : Colors.white70)),
+      leading: Icon(icon, color: isSelected ? AppTheme.primary : Colors.white60),
+      title: Text(
+        _titles[index],
+        style: TextStyle(
+          color: isSelected ? Colors.white : Colors.white60,
+          fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+        ),
+      ),
+      selected: isSelected,
+      selectedTileColor: AppTheme.primary.withOpacity(0.1),
       onTap: () {
         setState(() => _selectedIndex = index);
         Navigator.pop(context); // Close drawer
@@ -180,23 +201,34 @@ class _MainDashboardState extends State<_MainDashboard> {
     final fitbit = Provider.of<FitbitProvider>(context);
 
     return SingleChildScrollView(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Welcome, ${auth.user?.name ?? "User"}',
-              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 24),
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Welcome, ${auth.user?.name ?? "User"}',
+            style: Theme.of(context).textTheme.displayLarge?.copyWith(fontSize: 24),
+          ),
+          const SizedBox(height: 24),
             
-            // Fitbit Live Sync
-            Row(
+          // Fitbit Live Sync
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: AppTheme.glassDecoration(opacity: 0.05, radius: 20),
+            child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text('Fitbit Heart Rate', style: TextStyle(fontSize: 16, color: Colors.white70)),
-                if (fitbit.currentBpm > 0)
-                  Text('${fitbit.currentBpm} BPM', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.redAccent)),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text('Fitbit Sync', style: TextStyle(fontSize: 14, color: Colors.white54)),
+                    if (fitbit.currentBpm > 0)
+                      Text('${fitbit.currentBpm} BPM',
+                          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.redAccent))
+                    else
+                      const Text('Disconnected', style: TextStyle(fontSize: 18, color: Colors.white70)),
+                  ],
+                ),
                 if (fitbit.currentBpm == 0)
                   ElevatedButton(
                     onPressed: () async {
@@ -211,76 +243,104 @@ class _MainDashboardState extends State<_MainDashboard> {
                         }
                       }
                     },
-                    child: const Text('Connect Fitbit'),
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      backgroundColor: AppTheme.primary.withOpacity(0.2),
+                    ),
+                    child: const Text('Connect', style: TextStyle(color: AppTheme.primary)),
                   )
+                else
+                  const Icon(Icons.favorite, color: Colors.redAccent, size: 28),
               ],
             ),
-            const SizedBox(height: 16),
+          ),
+          const SizedBox(height: 24),
 
-            // Energy Chart
-            const Text('Energy Trends', style: TextStyle(fontSize: 16, color: Colors.white70)),
-            const SizedBox(height: 8),
-            Container(
-              height: 150,
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: const Color(0xFF1E293B),
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: EnergyChart(logs: _logs),
+          // Energy Chart
+          const Text('Energy Trends', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+          const SizedBox(height: 12),
+          Container(
+            height: 180,
+            padding: const EdgeInsets.all(16),
+            decoration: AppTheme.glassDecoration(opacity: 0.03, radius: 24),
+            child: EnergyChart(logs: _logs),
+          ),
+          const SizedBox(height: 32),
+
+          // Energy Slider Card
+          Container(
+            padding: const EdgeInsets.all(24),
+            decoration: BoxDecoration(
+              gradient: AppTheme.darkGradient,
+              borderRadius: BorderRadius.circular(24),
+              border: Border.all(color: Colors.white.withOpacity(0.05)),
             ),
-            const SizedBox(height: 24),
-
-            // Energy Slider Card
-            Card(
-              color: const Color(0xFF1E293B),
-              child: Padding(
-                padding: const EdgeInsets.all(20),
-                child: Column(
-                  children: [
-                    const Text('Track Your Energy', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
-                    const SizedBox(height: 20),
-                    Text('${_currentLevel.round()}', style: const TextStyle(fontSize: 48, fontWeight: FontWeight.w900, color: Colors.indigoAccent)),
-                    Slider(
-                      value: _currentLevel,
-                      min: 1,
-                      max: 10,
-                      divisions: 9,
-                      activeColor: Colors.indigoAccent,
-                      onChanged: (val) => setState(() => _currentLevel = val),
-                    ),
-                    const SizedBox(height: 20),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: _emojis.entries.map((e) {
-                        return GestureDetector(
-                          onTap: () => setState(() => _selectedEmoji = e.key),
-                          child: Column(
-                            children: [
-                              Opacity(
-                                opacity: _selectedEmoji == e.key ? 1.0 : 0.4,
-                                child: Text(e.value, style: const TextStyle(fontSize: 32)),
-                              ),
-                              const SizedBox(height: 4),
-                              Text(e.key, style: TextStyle(fontSize: 10, color: _selectedEmoji == e.key ? Colors.white : Colors.white38)),
-                            ],
-                          ),
-                        );
-                      }).toList(),
-                    ),
-                    const SizedBox(height: 24),
-                    ElevatedButton(
-                      onPressed: _isLogging ? null : _handleLog,
-                      style: ElevatedButton.styleFrom(
-                        minimumSize: const Size(double.infinity, 50),
-                        backgroundColor: Colors.indigoAccent,
-                      ),
-                      child: _isLogging ? const CircularProgressIndicator() : const Text('SUBMIT LOG', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-                    )
-                  ],
+            child: Column(
+              children: [
+                const Text('Log Current Energy', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                const SizedBox(height: 24),
+                Text('${_currentLevel.round()}',
+                    style: const TextStyle(fontSize: 56, fontWeight: FontWeight.w900, color: AppTheme.primary)),
+                Slider(
+                  value: _currentLevel,
+                  min: 1,
+                  max: 10,
+                  divisions: 9,
+                  activeColor: AppTheme.primary,
+                  inactiveColor: Colors.white10,
+                  onChanged: (val) => setState(() => _currentLevel = val),
                 ),
-              ),
+                const SizedBox(height: 24),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: _emojis.entries.map((e) {
+                    bool isSelected = _selectedEmoji == e.key;
+                    return GestureDetector(
+                      onTap: () => setState(() => _selectedEmoji = e.key),
+                      child: AnimatedContainer(
+                        duration: const Duration(milliseconds: 200),
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: isSelected ? AppTheme.primary.withOpacity(0.1) : Colors.transparent,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Column(
+                          children: [
+                            Text(e.value, style: TextStyle(fontSize: isSelected ? 36 : 28)),
+                            const SizedBox(height: 4),
+                            Text(e.key,
+                                style: TextStyle(
+                                    fontSize: 10,
+                                    color: isSelected ? Colors.white : Colors.white38,
+                                    fontWeight: isSelected ? FontWeight.bold : FontWeight.normal)),
+                          ],
+                        ),
+                      ),
+                    );
+                  }).toList(),
+                ),
+                const SizedBox(height: 32),
+                Container(
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    gradient: AppTheme.primaryGradient,
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: ElevatedButton(
+                    onPressed: _isLogging ? null : _handleLog,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.transparent,
+                      shadowColor: Colors.transparent,
+                      padding: const EdgeInsets.symmetric(vertical: 18),
+                    ),
+                    child: _isLogging
+                        ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+                        : const Text('SAVE ENERGY LOG', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, letterSpacing: 1.2)),
+                  ),
+                )
+              ],
             ),
+          ),
           ],
         ),
       );

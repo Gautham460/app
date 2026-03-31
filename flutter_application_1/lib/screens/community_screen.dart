@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:async';
 import 'package:flutter/material.dart';
 import '../services/api_service.dart';
+import '../theme/app_theme.dart';
 
 class CommunityScreen extends StatefulWidget {
   const CommunityScreen({super.key});
@@ -77,15 +78,15 @@ class _CommunityScreenState extends State<CommunityScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Row(
+          Row(
             children: [
-              Icon(Icons.people_outline, color: Colors.orangeAccent, size: 32),
-              SizedBox(width: 8),
-              Text('Community Vibe', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+              const Icon(Icons.people_alt_rounded, color: Colors.orangeAccent, size: 32),
+              const SizedBox(width: 12),
+              Text('Community Vibe', style: Theme.of(context).textTheme.displayLarge?.copyWith(fontSize: 24)),
             ],
           ),
           const SizedBox(height: 8),
-          const Text('Real-time anonymous global emotional energy state.', style: TextStyle(color: Colors.white70)),
+          const Text('Real-time anonymous global emotional energy state.', style: TextStyle(color: Colors.white54)),
           const SizedBox(height: 32),
 
           Row(
@@ -93,20 +94,19 @@ class _CommunityScreenState extends State<CommunityScreen> {
               Expanded(
                 child: Container(
                   padding: const EdgeInsets.all(20),
-                  decoration: BoxDecoration(
-                    color: Colors.purpleAccent.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(16)
+                  decoration: AppTheme.glassDecoration(opacity: 0.05, radius: 20).copyWith(
+                    border: Border.all(color: Colors.purpleAccent.withOpacity(0.2)),
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text('Energy Avg', style: TextStyle(color: Colors.white70)),
+                      const Text('ENERGY AVG', style: TextStyle(color: Colors.white38, fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 1.2)),
                       const SizedBox(height: 8),
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.baseline,
                         textBaseline: TextBaseline.alphabetic,
                         children: [
-                          Text(_energyPulse.toStringAsFixed(1), style: const TextStyle(fontSize: 28, color: Colors.purpleAccent, fontWeight: FontWeight.bold)),
+                          Text(_energyPulse.toStringAsFixed(1), style: const TextStyle(fontSize: 28, color: Colors.purpleAccent, fontWeight: FontWeight.w900)),
                           const Text(' / 10', style: TextStyle(fontSize: 14, color: Colors.purpleAccent)),
                         ],
                       )
@@ -118,20 +118,19 @@ class _CommunityScreenState extends State<CommunityScreen> {
               Expanded(
                 child: Container(
                   padding: const EdgeInsets.all(20),
-                  decoration: BoxDecoration(
-                    color: Colors.pinkAccent.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(16)
+                  decoration: AppTheme.glassDecoration(opacity: 0.05, radius: 20).copyWith(
+                    border: Border.all(color: Colors.pinkAccent.withOpacity(0.2)),
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text('Global BPM', style: TextStyle(color: Colors.white70)),
+                      const Text('GLOBAL BPM', style: TextStyle(color: Colors.white38, fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 1.2)),
                       const SizedBox(height: 8),
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.baseline,
                         textBaseline: TextBaseline.alphabetic,
                         children: [
-                          Text('$_communityBpm', style: const TextStyle(fontSize: 28, color: Colors.pinkAccent, fontWeight: FontWeight.bold)),
+                          Text('$_communityBpm', style: const TextStyle(fontSize: 28, color: Colors.pinkAccent, fontWeight: FontWeight.w900)),
                           const Text(' BPM', style: TextStyle(fontSize: 14, color: Colors.pinkAccent)),
                         ],
                       )
@@ -146,11 +145,7 @@ class _CommunityScreenState extends State<CommunityScreen> {
           
           Container(
             padding: const EdgeInsets.all(24),
-            decoration: BoxDecoration(
-              color: const Color(0xFF1E293B).withOpacity(0.5),
-              borderRadius: BorderRadius.circular(24),
-              border: Border.all(color: Colors.white10),
-            ),
+            decoration: AppTheme.glassDecoration(opacity: 0.03, radius: 24),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [

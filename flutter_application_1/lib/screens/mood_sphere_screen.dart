@@ -7,6 +7,7 @@ import 'package:socket_io_client/socket_io_client.dart' as IO;
 import '../providers/auth_provider.dart';
 import '../providers/fitbit_provider.dart';
 import '../services/api_service.dart';
+import '../theme/app_theme.dart';
 
 class MoodSphereScreen extends StatefulWidget {
   const MoodSphereScreen({super.key});
@@ -125,18 +126,18 @@ class _MoodSphereScreenState extends State<MoodSphereScreen> with SingleTickerPr
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Row(
+          Row(
             children: [
-              Icon(Icons.bubble_chart, color: Colors.blueAccent, size: 32),
-              SizedBox(width: 8),
+              const Icon(Icons.bubble_chart_rounded, color: AppTheme.primary, size: 32),
+              const SizedBox(width: 8),
               Text(
                 'Neural Sphere 2.0',
-                style: TextStyle(fontSize: 28, fontWeight: FontWeight.w800),
+                style: Theme.of(context).textTheme.displayLarge?.copyWith(fontSize: 28),
               ),
             ],
           ),
           const SizedBox(height: 8),
-          const Text('Stable 2D generative biometric visualization.', style: TextStyle(color: Colors.white70)),
+          const Text('Real-time generative biometric visualization.', style: TextStyle(color: Colors.white54)),
           const SizedBox(height: 32),
 
           // Central Visualization Container
@@ -212,23 +213,21 @@ class _MoodSphereScreenState extends State<MoodSphereScreen> with SingleTickerPr
             physics: const NeverScrollableScrollPhysics(),
             crossAxisSpacing: 16,
             mainAxisSpacing: 16,
-            childAspectRatio: 2,
+            childAspectRatio: 2.2,
             children: clusters.entries.map((entry) {
               final color = _getColor(entry.key);
               return Container(
                 padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: const Color(0xFF1E293B),
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border(left: BorderSide(color: color, width: 4)),
+                decoration: AppTheme.glassDecoration(opacity: 0.05, radius: 20).copyWith(
+                  border: Border.all(color: color.withOpacity(0.2)),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text(entry.key.toUpperCase(), style: const TextStyle(fontSize: 10, color: Colors.white54)),
+                    Text(entry.key.toUpperCase(), style: const TextStyle(fontSize: 10, color: Colors.white54, fontWeight: FontWeight.bold, letterSpacing: 1.2)),
                     const SizedBox(height: 4),
-                    Text('${entry.value}', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: color)),
+                    Text('${entry.value}', style: TextStyle(fontSize: 24, fontWeight: FontWeight.w900, color: color)),
                   ],
                 ),
               );

@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/fitbit_provider.dart';
+import '../theme/app_theme.dart';
 
 class MindfulnessScreen extends StatefulWidget {
   const MindfulnessScreen({super.key});
@@ -98,21 +99,22 @@ class _MindfulnessScreenState extends State<MindfulnessScreen> with SingleTicker
     final fitbit = Provider.of<FitbitProvider>(context);
 
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Icon(Icons.self_improvement, color: Colors.tealAccent, size: 32),
-              const SizedBox(width: 8),
-              const Text('Mindfulness Center', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-            ],
-          ),
-          const SizedBox(height: 8),
-          const Text('Regulate your nervous system with 4-7-8 guided breathing.', textAlign: TextAlign.center, style: TextStyle(color: Colors.white70)),
-          const SizedBox(height: 48),
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(Icons.self_improvement_rounded, color: Colors.tealAccent, size: 32),
+                const SizedBox(width: 8),
+                Text('Mindfulness Center', style: Theme.of(context).textTheme.displayLarge?.copyWith(fontSize: 24)),
+              ],
+            ),
+            const SizedBox(height: 8),
+            const Text('Regulate your nervous system with 4-7-8 guided breathing.',
+                textAlign: TextAlign.center, style: TextStyle(color: Colors.white54)),
+            const SizedBox(height: 48),
 
           if (fitbit.currentBpm > 0)
             Container(
@@ -168,17 +170,24 @@ class _MindfulnessScreenState extends State<MindfulnessScreen> with SingleTicker
 
           const SizedBox(height: 48),
 
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              padding: const EdgeInsets.symmetric(horizontal: 48, vertical: 16),
-              backgroundColor: _isActive ? Colors.redAccent : Colors.tealAccent,
-            ),
-            onPressed: _isActive ? _stopExercise : _startExercise, 
-            child: Text(
-              _isActive ? 'END SESSION' : 'START EXERCISE', 
-              style: const TextStyle(color: Colors.black87, fontWeight: FontWeight.bold, fontSize: 16)
+            Container(
+              width: double.infinity,
+              decoration: BoxDecoration(
+                gradient: _isActive
+                    ? const LinearGradient(colors: [Colors.redAccent, Colors.red])
+                    : const LinearGradient(colors: [Colors.tealAccent, Colors.teal]),
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 18),
+                    backgroundColor: Colors.transparent,
+                    shadowColor: Colors.transparent,
+                  ),
+                  onPressed: _isActive ? _stopExercise : _startExercise,
+                  child: Text(_isActive ? 'END SESSION' : 'START EXERCISE',
+                      style: const TextStyle(color: Colors.black87, fontWeight: FontWeight.bold, fontSize: 16))),
             )
-          )
         ],
       )
     );

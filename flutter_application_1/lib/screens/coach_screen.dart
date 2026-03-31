@@ -49,9 +49,7 @@ class _CoachScreenState extends State<CoachScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Gemini AI Coach')),
-      body: Column(
+    return Column(
         children: [
           Expanded(
             child: ListView.builder(
@@ -106,7 +104,6 @@ class _CoachScreenState extends State<CoachScreen> {
             ),
           )
         ],
-      ),
-    );
+      );
   }
 }

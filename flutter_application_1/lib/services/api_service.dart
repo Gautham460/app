@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class ApiService {
-  static const String baseUrl = 'http://10.0.2.2:5000/api'; // 10.0.2.2 is the alias for 127.0.0.1 in Android Emulator
+  static const String baseUrl = 'https://emotional-energy-os.onrender.com/api';
 
   static Map<String, String> _getHeaders([String? token]) {
     return {

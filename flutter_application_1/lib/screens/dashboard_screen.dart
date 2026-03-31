@@ -4,6 +4,15 @@ import '../providers/auth_provider.dart';
 import '../services/energy_service.dart';
 import '../widgets/energy_chart.dart';
 import 'coach_screen.dart';
+import 'habit_link_screen.dart';
+import 'mood_sphere_screen.dart';
+import 'energy_forecast_screen.dart';
+import 'mindfulness_screen.dart';
+import 'community_screen.dart';
+import 'social_report_screen.dart';
+import 'admin_dashboard_screen.dart';
+import '../providers/fitbit_provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -15,26 +24,100 @@ class DashboardScreen extends StatefulWidget {
 class _DashboardScreenState extends State<DashboardScreen> {
   int _selectedIndex = 0;
   
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final auth = Provider.of<AuthProvider>(context, listen: false);
+      if (auth.user != null) {
+        Provider.of<FitbitProvider>(context, listen: false).startPolling(auth.user!.id);
+      }
+    });
+  }
+  
+  static const List<String> _titles = [
+    'Energy Dashboard',
+    'AI Coach',
+    'Habit Link',
+    'Mood Sphere',
+    'Energy Forecast',
+    'Mindfulness',
+    'Community Feed',
+    'Social Report',
+    'Admin Portal',
+  ];
+
   static const List<Widget> _pages = [
     _MainDashboard(),
     CoachScreen(),
+    HabitLinkScreen(),
+    MoodSphereScreen(),
+    EnergyForecastScreen(),
+    MindfulnessScreen(),
+    CommunityScreen(),
+    SocialReportScreen(),
+    AdminDashboardScreen(),
   ];
 
   @override
   Widget build(BuildContext context) {
+    final auth = Provider.of<AuthProvider>(context, listen: false);
+
     return Scaffold(
-      body: _pages[_selectedIndex],
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _selectedIndex,
-        onTap: (index) => setState(() => _selectedIndex = index),
-        selectedItemColor: Colors.indigoAccent,
-        unselectedItemColor: Colors.white38,
-        backgroundColor: const Color(0xFF1E293B),
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.dashboard), label: 'Home'),
-          BottomNavigationBarItem(icon: Icon(Icons.chat_bubble), label: 'AI Coach'),
+      appBar: AppBar(
+        title: Text(_titles[_selectedIndex]),
+        actions: [
+          if (_selectedIndex == 0) // Only show logout on dashboard
+            IconButton(
+              icon: const Icon(Icons.logout),
+              onPressed: () => auth.logout(),
+            )
         ],
       ),
+      drawer: Drawer(
+        backgroundColor: const Color(0xFF1E293B),
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: [
+            DrawerHeader(
+              decoration: const BoxDecoration(
+                color: Colors.indigoAccent,
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  const Icon(Icons.energy_savings_leaf, color: Colors.white, size: 48),
+                  const SizedBox(height: 12),
+                  Text('Emotional Energy OS', style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
+                  Text(auth.user?.name ?? 'User', style: const TextStyle(color: Colors.white70, fontSize: 14)),
+                ],
+              ),
+            ),
+            _buildDrawerItem(Icons.dashboard, 0),
+            _buildDrawerItem(Icons.chat_bubble, 1),
+            _buildDrawerItem(Icons.check_circle_outline, 2),
+            _buildDrawerItem(Icons.bubble_chart, 3),
+            _buildDrawerItem(Icons.show_chart, 4),
+            _buildDrawerItem(Icons.self_improvement, 5),
+            _buildDrawerItem(Icons.people_outline, 6),
+            _buildDrawerItem(Icons.share, 7),
+            _buildDrawerItem(Icons.admin_panel_settings, 8),
+          ],
+        ),
+      ),
+      body: _pages[_selectedIndex],
+    );
+  }
+
+  Widget _buildDrawerItem(IconData icon, int index) {
+    return ListTile(
+      leading: Icon(icon, color: _selectedIndex == index ? Colors.indigoAccent : Colors.white70),
+      title: Text(_titles[index], style: TextStyle(color: _selectedIndex == index ? Colors.white : Colors.white70)),
+      onTap: () {
+        setState(() => _selectedIndex = index);
+        Navigator.pop(context); // Close drawer
+      },
     );
   }
 }
@@ -94,18 +177,9 @@ class _MainDashboardState extends State<_MainDashboard> {
   @override
   Widget build(BuildContext context) {
     final auth = Provider.of<AuthProvider>(context);
+    final fitbit = Provider.of<FitbitProvider>(context);
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Energy OS'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.logout),
-            onPressed: () => auth.logout(),
-          )
-        ],
-      ),
-      body: SingleChildScrollView(
+    return SingleChildScrollView(
         padding: const EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -116,6 +190,27 @@ class _MainDashboardState extends State<_MainDashboard> {
             ),
             const SizedBox(height: 24),
             
+            // Fitbit Live Sync
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text('Fitbit Heart Rate', style: TextStyle(fontSize: 16, color: Colors.white70)),
+                if (fitbit.currentBpm > 0)
+                  Text('${fitbit.currentBpm} BPM', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.redAccent)),
+                if (fitbit.currentBpm == 0)
+                  ElevatedButton(
+                    onPressed: () async {
+                      final url = Uri.parse('https://emotional-energy-os.onrender.com/api/fitbit/auth?userId=${auth.user!.id}');
+                      if (await canLaunchUrl(url)) {
+                        await launchUrl(url, mode: LaunchMode.externalApplication);
+                      }
+                    },
+                    child: const Text('Connect Fitbit'),
+                  )
+              ],
+            ),
+            const SizedBox(height: 16),
+
             // Energy Chart
             const Text('Energy Trends', style: TextStyle(fontSize: 16, color: Colors.white70)),
             const SizedBox(height: 8),
@@ -182,7 +277,6 @@ class _MainDashboardState extends State<_MainDashboard> {
             ),
           ],
         ),
-      ),
-    );
+      );
   }
 }

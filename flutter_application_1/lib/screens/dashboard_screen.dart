@@ -232,13 +232,39 @@ class _MainDashboardState extends State<_MainDashboard> {
                 if (fitbit.currentBpm == 0)
                   ElevatedButton(
                     onPressed: () async {
-                      final url = Uri.parse('https://emotional-energy-os.onrender.com/api/fitbit/auth?userId=${auth.user!.id}');
-                      if (await canLaunchUrl(url)) {
-                        await launchUrl(url, mode: LaunchMode.externalApplication);
-                      } else {
+                      final uid = auth.user?.id;
+                      if (uid == null || uid.isEmpty) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Error: User ID not found. Please re-login.'), backgroundColor: Colors.redAccent),
+                        );
+                        return;
+                      }
+
+                      // Print for debugging in emulator logs
+                      debugPrint('Fitbit Auth Request for UID: $uid');
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('Connecting as User: $uid')),
+                        );
+                      }
+                      
+                      final url = Uri.parse('https://emotional-energy-os.onrender.com/api/fitbit/auth?userId=$uid');
+                      
+                      try {
+                        if (await canLaunchUrl(url)) {
+                          await launchUrl(url, mode: LaunchMode.externalApplication);
+                        } else {
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text('Could not open browser: $url')),
+                            );
+                          }
+                        }
+                      } catch (e) {
+                        debugPrint('Launch Error: $e');
                         if (context.mounted) {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text('Could not launch Fitbit login: $url')),
+                            SnackBar(content: Text('Error launching Fitbit: $e')),
                           );
                         }
                       }

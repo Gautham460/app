@@ -9,14 +9,15 @@ router.get('/auth', (req, res) => {
     if (!userId) {
         return res.status(400).send('Missing userId. Please log in to the app first.');
     }
-    const scope = 'heartrate profile';
-    let redirectUri = (process.env.FITBIT_REDIRECT_URI || 'http://localhost:5000/api/fitbit/callback').trim();
+    const scope = 'heartrate'; // Minimal scope for Personal apps to reduce parameter length
+    let redirectUri = (process.env.FITBIT_REDIRECT_URI || 'http://localhost:5000/api/fitbit/callback').replace(/\s+/g, '');
     
-    // Ensure no trailing slash if the dashboard doesn't have one
+    // Final check for trailing slash mismatch
     if (redirectUri.endsWith('/')) {
         redirectUri = redirectUri.slice(0, -1);
     }
-    const state = Buffer.from(userId).toString('base64'); // Encode userId securely as state
+    
+    const state = Buffer.from(userId).toString('base64').replace(/=/g, ''); // Remove padding for cleaner state
     const authUrl = `https://www.fitbit.com/oauth2/authorize?response_type=code&client_id=${process.env.FITBIT_CLIENT_ID}&redirect_uri=${encodeURIComponent(redirectUri)}&scope=${scope}&state=${state}`;
     
     // DEBUG: Log the generated URL for Render Logs

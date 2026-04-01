@@ -10,9 +10,14 @@ router.get('/auth', (req, res) => {
         return res.status(400).send('Missing userId. Please log in to the app first.');
     }
     const scope = 'heartrate profile';
-    const redirectUri = process.env.FITBIT_REDIRECT_URI || 'http://localhost:5000/api/fitbit/callback';
+    let redirectUri = (process.env.FITBIT_REDIRECT_URI || 'http://localhost:5000/api/fitbit/callback').trim();
+    
+    // Ensure no trailing slash if the dashboard doesn't have one
+    if (redirectUri.endsWith('/')) {
+        redirectUri = redirectUri.slice(0, -1);
+    }
     const state = Buffer.from(userId).toString('base64'); // Encode userId securely as state
-    const authUrl = `https://www.fitbit.com/oauth2/authorize?response_type=code&client_id=${process.env.FITBIT_CLIENT_ID}&redirect_uri=${encodeURIComponent(redirectUri)}&scope=${scope}&state=${state}&expires_in=604800`;
+    const authUrl = `https://www.fitbit.com/oauth2/authorize?response_type=code&client_id=${process.env.FITBIT_CLIENT_ID}&redirect_uri=${encodeURIComponent(redirectUri)}&scope=${scope}&state=${state}`;
     
     // DEBUG: Log the generated URL for Render Logs
     console.log(`[FITBIT AUTH] Generated URL for User ${userId}:`);
@@ -162,7 +167,14 @@ router.get('/heart-rate/:userId', async (req, res) => {
         });
       } catch (fitbitErr) {
         console.error("Fitbit Intraday fetch error:", fitbitErr.response?.data || fitbitErr.message);
-        // Fail over to mock if final fetch fails
+        
+        // If the refresh token is truly dead, clear it so the user can re-auth
+        if (fitbitErr.response?.data?.errors?.some(e => e.errorType === 'invalid_grant')) {
+            console.log("Token revoked or invalid. Clearing from database...");
+            fitbitData.accessToken = null;
+            fitbitData.refreshToken = null;
+            await fitbitData.save();
+        }
       }
     }
 
@@ -197,6 +209,22 @@ router.get('/heart-rate/:userId', async (req, res) => {
     console.error('Final sync error:', err);
     res.status(500).json({ error: 'Failed to sync Fitbit data' });
   }
+});
+
+// Debug route to verify parameters
+router.get('/debug', (req, res) => {
+    let redirectUri = (process.env.FITBIT_REDIRECT_URI || 'http://localhost:5000/api/fitbit/callback').trim();
+    if (redirectUri.endsWith('/')) {
+        redirectUri = redirectUri.slice(0, -1);
+    }
+    
+    res.json({
+        "Status": "Debugging Fitbit Config",
+        "Registered_ClientID": process.env.FITBIT_CLIENT_ID,
+        "Registered_RedirectURI": redirectUri,
+        "Environment_Source": process.env.FITBIT_REDIRECT_URI ? "Render UI/Env" : "Fallback Default",
+        "Tip": "Match the 'Registered_RedirectURI' string exactly in dev.fitbit.com"
+    });
 });
 
 module.exports = router;

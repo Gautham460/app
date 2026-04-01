@@ -13,6 +13,13 @@ router.get('/auth', (req, res) => {
     const redirectUri = process.env.FITBIT_REDIRECT_URI || 'http://localhost:5000/api/fitbit/callback';
     const state = Buffer.from(userId).toString('base64'); // Encode userId securely as state
     const authUrl = `https://www.fitbit.com/oauth2/authorize?response_type=code&client_id=${process.env.FITBIT_CLIENT_ID}&redirect_uri=${encodeURIComponent(redirectUri)}&scope=${scope}&state=${state}&expires_in=604800`;
+    
+    // DEBUG: Log the generated URL for Render Logs
+    console.log(`[FITBIT AUTH] Generated URL for User ${userId}:`);
+    console.log(` - ClientID: ${process.env.FITBIT_CLIENT_ID}`);
+    console.log(` - Redirect: ${redirectUri}`);
+    console.log(` - State (base64): ${state}`);
+    
     res.redirect(authUrl);
 });
 
